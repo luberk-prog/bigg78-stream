@@ -41,7 +41,7 @@ export default function Navbar() {
           </button>
 
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2 shrink-0">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-accent-pink flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
@@ -71,7 +71,7 @@ export default function Navbar() {
 
           {/* Nav links */}
           <div className="hidden md:flex items-center gap-2">
-            <Link to="/dashboard" className="nav-link text-sm px-3 py-2 rounded-lg hover:bg-white/5 transition-all">Home</Link>
+            <Link to="/" className="nav-link text-sm px-3 py-2 rounded-lg hover:bg-white/5 transition-all">Home</Link>
             <Link to="/search" className="nav-link text-sm px-3 py-2 rounded-lg hover:bg-white/5 transition-all">Browse</Link>
           </div>
 
@@ -171,7 +171,7 @@ export default function Navbar() {
 
             <div className="flex flex-col gap-2">
               <Link 
-                to="/dashboard" 
+                to="/" 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-white/70 hover:text-white transition-all font-medium"
               >

@@ -66,6 +66,10 @@ export default function Dashboard() {
   useEffect(() => { fetchTrending() }, [fetchTrending])
 
   const handleStartParty = async (video) => {
+    if (!user) {
+      navigate('/login', { state: { from: '/dashboard' } })
+      return
+    }
     setIsCreatingRoom(true)
     const videoId = video.youtubeId || video.id
     try {
@@ -82,7 +86,7 @@ export default function Dashboard() {
         const room = await res.json()
         setCreatedRoomId(room.roomId)
         // Wait a beat for the user to see the code, then navigate or let them click
-        // For now, let's navigate after 2s
+        // For now, let's navigate after 1s
         setTimeout(() => navigate(`/room/${room.roomId}`), 1000)
       } else {
         throw new Error('Server error')
@@ -111,6 +115,10 @@ export default function Dashboard() {
   }
 
   const handleQuickCreate = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: '/dashboard' } })
+      return
+    }
     if (!selectedCreateVideo) return
     setQuickCreateLoading(true)
     try {
@@ -191,7 +199,13 @@ export default function Dashboard() {
         {/* Room Action Bar */}
         <div className="flex items-center gap-4 mb-10 animate-fade-in-up">
           <button
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => {
+              if (!user) {
+                navigate('/login', { state: { from: '/dashboard', createRoom: true } })
+                return
+              }
+              setShowCreateModal(true)
+            }}
             className="flex items-center gap-3 bg-brand text-white font-black px-8 py-4 rounded-2xl hover:bg-brand-light active:scale-95 transition-all shadow-xl shadow-brand/20 text-sm uppercase tracking-widest"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>

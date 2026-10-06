@@ -18,7 +18,7 @@ export default function Sidebar() {
 
   return (
     <aside className="fixed left-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 p-2 rounded-[2.5rem] glass-dark border border-white/10 shadow-2xl">
-      <SidebarIcon to="/dashboard" active={pathname === '/dashboard'}>
+      <SidebarIcon to="/" active={pathname === '/'}>
         <svg className="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>

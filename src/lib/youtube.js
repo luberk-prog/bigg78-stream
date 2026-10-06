@@ -128,7 +128,6 @@ export async function getTrending(maxResults = 24, pageToken = '', regionCode = 
   url.searchParams.set('part', 'snippet,contentDetails,statistics')
   url.searchParams.set('chart', 'mostPopular')
   url.searchParams.set('regionCode', regionCode)
-  url.searchParams.set('videoEmbeddable', 'true') // Strictly enforce where possible
   url.searchParams.set('maxResults', String(maxResults))
   url.searchParams.set('key', API_KEY)
   if (pageToken) url.searchParams.set('pageToken', pageToken)
