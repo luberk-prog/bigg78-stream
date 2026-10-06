@@ -17,6 +17,7 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/library" element={<Library />} />
         <Route path="/history" element={<Library />} />
         <Route path="/favorites" element={<Library />} />
         <Route path="/profile" element={<Profile />} />
