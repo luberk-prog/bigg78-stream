@@ -30,24 +30,6 @@ export default function HeroSlideshow({ videos = [], isLoading = false }) {
     }, 300)
   }
 
-  const handlePrev = () => {
-    if (slideCount === 0) return
-    setIsTransitioning(true)
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + slideCount) % slideCount)
-      setIsTransitioning(false)
-    }, 300)
-  }
-
-  const handleSelectSlide = (idx) => {
-    if (idx === currentIndex) return
-    setIsTransitioning(true)
-    setTimeout(() => {
-      setCurrentIndex(idx)
-      setIsTransitioning(false)
-    }, 300)
-  }
-
   const handleWatchNow = () => {
     if (!currentVideo) return
     const targetId = currentVideo.id || currentVideo.youtubeId
@@ -94,51 +76,17 @@ export default function HeroSlideshow({ videos = [], isLoading = false }) {
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/90 via-transparent to-transparent h-32" />
       </div>
 
-      {/* Hero Content Area */}
+      {/* Hero Content Area - Simplified to title only */}
       <div className="relative z-10 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-12 sm:pb-16 lg:pb-20">
         <div
-          className={`max-w-3xl space-y-4 sm:space-y-5 transition-all duration-500 ${
+          className={`max-w-3xl space-y-6 transition-all duration-500 ${
             isTransitioning ? 'opacity-0 translate-y-3' : 'opacity-100 translate-y-0'
           }`}
         >
-          {/* Metadata & Tag */}
-          <div className="flex items-center gap-3 text-xs sm:text-sm font-medium">
-            <span className="px-2.5 py-1 rounded bg-red-600/90 text-white font-bold tracking-wide uppercase text-[11px]">
-              Trending #{currentIndex + 1}
-            </span>
-            {currentVideo.category && (
-              <span className="text-zinc-300 font-semibold uppercase tracking-wider text-[11px] bg-zinc-900/80 px-2.5 py-1 rounded border border-zinc-800">
-                {currentVideo.category}
-              </span>
-            )}
-            {currentVideo.duration && (
-              <span className="text-zinc-400 text-xs hidden xs:inline-block">
-                • {currentVideo.duration}
-              </span>
-            )}
-            {currentVideo.views && (
-              <span className="text-zinc-400 text-xs hidden sm:inline-block">
-                • {currentVideo.views} views
-              </span>
-            )}
-          </div>
-
-          {/* Video Title */}
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.15] drop-shadow-md line-clamp-2">
+          {/* Video Title Only */}
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] drop-shadow-md line-clamp-3">
             {currentVideo.title}
           </h1>
-
-          {/* Channel Info & Description */}
-          <div className="space-y-2">
-            <p className="text-zinc-400 text-xs sm:text-sm font-semibold uppercase tracking-wider">
-              {currentVideo.channel}
-            </p>
-            {currentVideo.description && (
-              <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed line-clamp-2 max-w-2xl font-normal drop-shadow-sm">
-                {currentVideo.description}
-              </p>
-            )}
-          </div>
 
           {/* Primary Action Button */}
           <div className="pt-2 flex items-center gap-4">
