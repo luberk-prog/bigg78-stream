@@ -6,11 +6,9 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
   const navigate = useNavigate()
   const containerRef = useRef(null)
   const scrollRef = useRef(null)
-  const [scrollPosition, setScrollPosition] = useState(0)
+  const [hoveredIndex, setHoveredIndex] = useState(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
-  const [hoveredIndex, setHoveredIndex] = useState(null)
-  const [mouseX, setMouseX] = useState(null)
 
   // Maximum 12 trending videos
   const trendingVideos = videos.length > 0 ? videos.slice(0, 12) : []
@@ -19,7 +17,6 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
   const updateScrollState = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-      setScrollPosition(scrollLeft)
       setCanScrollLeft(scrollLeft > 0)
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
     }
@@ -38,6 +35,31 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
     }
   }, [trendingVideos])
 
+  // Scroll to center a specific card when hovered
+  const scrollToCard = (idx) => {
+    if (scrollRef.current) {
+      const cardWidth = 208 // card width (w-48 = 192px + gap)
+      const gap = 12
+      const containerWidth = scrollRef.current.clientWidth
+      const cardCenter = idx * (cardWidth + gap) + cardWidth / 2
+      const scrollLeft = cardCenter - containerWidth / 2
+
+      scrollRef.current.scrollTo({
+        left: Math.max(0, scrollLeft),
+        behavior: 'smooth',
+      })
+    }
+  }
+
+  const handleMouseEnter = (idx) => {
+    setHoveredIndex(idx)
+    scrollToCard(idx)
+  }
+
+  const handleMouseLeave = () => {
+    setHoveredIndex(null)
+  }
+
   const scroll = (direction) => {
     if (scrollRef.current) {
       const cardWidth = 220 // card width + gap
@@ -49,34 +71,6 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
     }
   }
 
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return
-    const rect = containerRef.current.getBoundingClientRect()
-    const relX = e.clientX - rect.left
-    setMouseX(relX)
-
-    // Auto-scroll on hover near edges
-    if (scrollRef.current) {
-      const threshold = 80
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-      const canScrollR = scrollLeft < scrollWidth - clientWidth - 10
-      const canScrollL = scrollLeft > 0
-
-      if (relX < threshold && canScrollL) {
-        // Near left edge, scroll left slowly
-        scrollRef.current.scrollBy({ left: -8, behavior: 'auto' })
-      } else if (relX > rect.width - threshold && canScrollR) {
-        // Near right edge, scroll right slowly
-        scrollRef.current.scrollBy({ left: 8, behavior: 'auto' })
-      }
-    }
-  }
-
-  const handleMouseLeave = () => {
-    setMouseX(null)
-    setHoveredIndex(null)
-  }
-
   const handleWatchNow = (video, e) => {
     e.stopPropagation()
     const videoId = video.id || video.youtubeId
@@ -86,7 +80,7 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
   // Loading skeleton
   if (isLoading || trendingVideos.length === 0) {
     return (
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <h2 className="mb-4 text-lg font-bold text-zinc-300">Trending</h2>
         <div className="flex gap-3 overflow-hidden">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -101,8 +95,10 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
     )
   }
 
+  if (!trendingVideos || trendingVideos.length === 0) return null
+
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 -mt-4 sm:-mt-6">
       {/* Section Header */}
       <h2 className="mb-5 text-lg font-bold text-zinc-300">Trending</h2>
 
@@ -110,8 +106,6 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
       <div
         ref={containerRef}
         className="relative"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
       >
         {/* Scrollable Cards Container */}
         <div
@@ -121,20 +115,23 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
           {trendingVideos.map((video, idx) => {
             const videoId = video.id || video.youtubeId
             const isHovered = hoveredIndex === idx
+            const isActive = hoveredIndex !== null
 
             return (
               <div
                 key={videoId || idx}
-                className="group relative w-48 flex-shrink-0 cursor-pointer snap-start select-none"
-                onMouseEnter={() => setHoveredIndex(idx)}
-                onMouseLeave={() => setHoveredIndex(null)}
+                className="group relative w-48 flex-shrink-0 cursor-pointer snap-start select-none transition-all duration-300"
+                onMouseEnter={() => handleMouseEnter(idx)}
+                onMouseLeave={handleMouseLeave}
               >
                 {/* Card */}
                 <div
-                  className={`relative overflow-hidden rounded-lg border transition-all duration-200 ${
+                  className={`relative overflow-hidden rounded-lg border transition-all duration-300 ${
                     isHovered
-                      ? 'border-zinc-600 shadow-2xl -translate-y-2'
-                      : 'border-zinc-800/50 shadow-lg'
+                      ? 'border-zinc-600 shadow-2xl scale-105'
+                      : isActive
+                      ? 'border-zinc-800/50 shadow-lg opacity-50 blur-sm'
+                      : 'border-zinc-800/50 shadow-lg opacity-100'
                   }`}
                 >
                   {/* Thumbnail - 2:3 Aspect */}
@@ -144,13 +141,17 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
                       src={video.thumbnail}
                       alt={video.title}
                       className={`h-full w-full object-cover transition-all duration-300 ${
-                        isHovered ? 'scale-110 brightness-110' : 'scale-100 brightness-100'
+                        isHovered
+                          ? 'scale-100 brightness-110'
+                          : isActive
+                          ? 'scale-100 brightness-75'
+                          : 'scale-100 brightness-100'
                       }`}
                     />
 
                     {/* Hover Overlay */}
                     <div
-                      className={`absolute inset-0 bg-black/30 transition-opacity duration-200 flex items-center justify-center ${
+                      className={`absolute inset-0 bg-black/30 transition-opacity duration-300 flex items-center justify-center ${
                         isHovered ? 'opacity-100' : 'opacity-0'
                       }`}
                     >
@@ -173,10 +174,10 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
                     )}
                   </div>
 
-                  {/* Card Info - Only on Hover or if focused */}
+                  {/* Card Info - Only on Hover */}
                   <div
-                    className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-3 py-3 transition-all duration-200 ${
-                      isHovered ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                    className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent px-3 py-3 transition-all duration-300 ${
+                      isHovered ? 'opacity-100' : 'opacity-0 group-hover:opacity-0'
                     }`}
                   >
                     {/* Category */}
@@ -244,7 +245,7 @@ export default function TrendingSection({ videos = [], isLoading = false }) {
 
       {/* Metadata */}
       {trendingVideos.length > 0 && (
-        <p className="mt-4 text-xs text-zinc-600">
+        <p className="mt-3 text-xs text-zinc-600">
           {trendingVideos.length} trending videos
         </p>
       )}
